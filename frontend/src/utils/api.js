@@ -22,7 +22,6 @@ api.interceptors.response.use(
 
 export default api;
 
-// ── Typed helpers ─────────────────────────────────────────
 export const authAPI = {
   login:    (body) => api.post('/api/auth?action=login',    body),
   register: (body) => api.post('/api/auth?action=register', body),

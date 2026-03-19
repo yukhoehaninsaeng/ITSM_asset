@@ -2,31 +2,16 @@ require('dotenv').config({ path: '.env.local' });
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-});
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
 
 async function seed() {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-
-    // Admin
-    const adminHash = await bcrypt.hash('admin1234', 10);
-    await client.query(`
-      INSERT INTO users (username,email,full_name,hashed_password,is_admin,department)
-      VALUES ('admin','admin@company.com','시스템 관리자',$1,true,'IT')
-      ON CONFLICT (username) DO NOTHING
-    `, [adminHash]);
-
-    // Regular user
-    const userHash = await bcrypt.hash('user1234', 10);
-    await client.query(`
-      INSERT INTO users (username,email,full_name,hashed_password,department)
-      VALUES ('jdoe','jdoe@company.com','홍길동',$1,'개발팀')
-      ON CONFLICT (username) DO NOTHING
-    `, [userHash]);
+    const ah = await bcrypt.hash('admin1234', 10);
+    await client.query(`INSERT INTO users (username,email,full_name,hashed_password,is_admin,department) VALUES ('admin','admin@company.com','시스템 관리자',$1,true,'IT') ON CONFLICT(username) DO NOTHING`, [ah]);
+    const uh = await bcrypt.hash('user1234', 10);
+    await client.query(`INSERT INTO users (username,email,full_name,hashed_password,department) VALUES ('jdoe','jdoe@company.com','홍길동',$1,'개발팀') ON CONFLICT(username) DO NOTHING`, [uh]);
 
     const assets = [
       ['AST-0001','Dell XPS 15 노트북','Hardware','In Use','Dell','XPS 15 9530','SN-DELL-001','서울 본사 3층','개발팀'],
@@ -38,25 +23,13 @@ async function seed() {
       ['AST-0007','Microsoft Surface Pro','Hardware','In Stock','Microsoft','Surface Pro 9','SN-MS-007','창고 A','영업팀'],
       ['AST-0008','iPad Pro 12.9인치','Hardware','In Use','Apple','iPad Pro M2','SN-APPLE-008','회의실 A','경영팀'],
     ];
-
-    for (const [num,name,cat,status,mfr,model,sn,loc,dept] of assets) {
-      await client.query(`
-        INSERT INTO assets
-          (asset_number,name,category,status,manufacturer,model,serial_number,location,department)
-        VALUES ($1,$2,$3::asset_category,$4::asset_status,$5,$6,$7,$8,$9)
-        ON CONFLICT (asset_number) DO NOTHING
-      `, [num,name,cat,status,mfr,model,sn,loc,dept]);
+    for (const [n,nm,ca,st,mf,mo,sn,lo,de] of assets) {
+      await client.query(`INSERT INTO assets (asset_number,name,category,status,manufacturer,model,serial_number,location,department) VALUES ($1,$2,$3::asset_category,$4::asset_status,$5,$6,$7,$8,$9) ON CONFLICT(asset_number) DO NOTHING`, [n,nm,ca,st,mf,mo,sn,lo,de]);
     }
-
     await client.query('COMMIT');
-    console.log('✅  Seed complete  →  admin/admin1234  |  jdoe/user1234');
+    console.log('✅ Seed complete — admin/admin1234 | jdoe/user1234');
   } catch (err) {
-    await client.query('ROLLBACK');
-    console.error('❌  Seed failed:', err.message);
-  } finally {
-    client.release();
-    pool.end();
-  }
+    await client.query('ROLLBACK'); console.error('❌ Seed failed:', err.message);
+  } finally { client.release(); pool.end(); }
 }
-
 seed();

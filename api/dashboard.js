@@ -1,5 +1,5 @@
-const { query }              = require('./lib/db');
-const { cors, authenticate } = require('./lib/helpers');
+const { query }              = require('../lib/db');
+const { cors, authenticate } = require('../lib/helpers');
 
 module.exports = async (req, res) => {
   cors(res);
@@ -25,14 +25,8 @@ module.exports = async (req, res) => {
              LEFT JOIN users  u ON sl.user_id=u.id
              ORDER BY sl.scan_time DESC LIMIT 10`),
     ]);
-
     const cat = {};
     categories.rows.forEach(r => { cat[r.category] = parseInt(r.count); });
-
-    return res.json({
-      ...totals.rows[0],
-      category_breakdown: cat,
-      recent_scans: recentScans.rows,
-    });
+    return res.json({ ...totals.rows[0], category_breakdown: cat, recent_scans: recentScans.rows });
   } catch (err) { return res.status(500).json({ error: err.message }); }
 };

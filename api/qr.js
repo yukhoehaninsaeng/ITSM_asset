@@ -1,10 +1,9 @@
 const QRCode = require('qrcode');
-const { query }              = require('./lib/db');
-const { cors, authenticate } = require('./lib/helpers');
+const { query }              = require('../lib/db');
+const { cors, authenticate } = require('../lib/helpers');
 
-// Routes:
-//   GET /api/qr?asset=[num]&base_url=[url]   → PNG (auth required)
-//   GET /api/qr?action=info&asset=[num]      → public asset info (no auth)
+// GET /api/qr?asset=AST-001&base_url=https://...  → PNG  (auth required)
+// GET /api/qr?asset=AST-001&action=info           → JSON (no auth)
 
 module.exports = async (req, res) => {
   cors(res);
@@ -35,12 +34,10 @@ module.exports = async (req, res) => {
   const { rows:[asset] } = await query('SELECT id FROM assets WHERE asset_number=$1', [assetNumber]);
   if (!asset) return res.status(404).json({ error: 'Asset not found' });
 
-  const appUrl = base_url || process.env.APP_URL || `https://${req.headers.host}`;
+  const appUrl = base_url || `https://${req.headers.host}`;
   try {
     const buf = await QRCode.toBuffer(`${appUrl}/scan/${assetNumber}`, {
-      errorCorrectionLevel: 'M',
-      width: 300,
-      margin: 2,
+      errorCorrectionLevel: 'M', width: 300, margin: 2,
       color: { dark: '#1a292b', light: '#ffffff' },
     });
     res.setHeader('Content-Type', 'image/png');

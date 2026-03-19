@@ -1,6 +1,5 @@
 const { Pool } = require('pg');
 
-// Reuse pool across warm serverless invocations
 let pool;
 const getPool = () => {
   if (!pool) {
