@@ -1,5 +1,5 @@
-const { query }              = require('../lib/db');
-const { cors, authenticate } = require('../lib/helpers');
+const { query }              = require('./lib/db');
+const { cors, authenticate } = require('./lib/helpers');
 
 module.exports = async (req, res) => {
   cors(res);

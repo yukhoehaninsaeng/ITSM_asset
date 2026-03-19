@@ -14,7 +14,10 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault(); setLoading(true);
     try { await login(form.username, form.password); navigate(redirect); }
-    catch (err) { toast.error(err.response?.data?.error || '로그인 실패'); }
+    catch (err) {
+      const msg = err.response?.data?.error || err.message || '로그인 실패';
+      toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+    }
     finally { setLoading(false); }
   };
 

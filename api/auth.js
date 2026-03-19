@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt    = require('jsonwebtoken');
-const { query }              = require('../lib/db');
-const { cors, authenticate } = require('../lib/helpers');
+const { query }              = require('./lib/db');
+const { cors, authenticate } = require('./lib/helpers');
 
 // POST /api/auth?action=login
 // POST /api/auth?action=register

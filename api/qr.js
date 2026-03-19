@@ -1,6 +1,6 @@
 const QRCode = require('qrcode');
-const { query }              = require('../lib/db');
-const { cors, authenticate } = require('../lib/helpers');
+const { query }              = require('./lib/db');
+const { cors, authenticate } = require('./lib/helpers');
 
 // GET /api/qr?asset=AST-001&base_url=https://...  → PNG  (auth required)
 // GET /api/qr?asset=AST-001&action=info           → JSON (no auth)

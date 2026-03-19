@@ -1,5 +1,5 @@
-const { query }              = require('../lib/db');
-const { cors, authenticate } = require('../lib/helpers');
+const { query }              = require('./lib/db');
+const { cors, authenticate } = require('./lib/helpers');
 
 // GET    /api/assets              → list
 // POST   /api/assets              → create
