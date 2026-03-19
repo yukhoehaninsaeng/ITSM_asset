@@ -45,7 +45,7 @@ Vercel 대시보드 → 프로젝트 → Settings → Environment Variables
 
 | Key | Value |
 |-----|-------|
-| `DATABASE_URL` | Supabase Transaction pooler URI |
+| `DATABASE_URL` | Supabase `Connect`의 `Transaction pooler` URI (`postgresql://postgres:[password]@db.[project-ref].supabase.co:6543/postgres`) |
 | `JWT_SECRET` | 랜덤 비밀 문자열 (32자 이상) |
 
 ---

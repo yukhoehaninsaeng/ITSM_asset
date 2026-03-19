@@ -2,38 +2,48 @@ const { Pool } = require('pg');
 
 let pool;
 
-const getPool = () => {
-  if (!pool) {
-    // connectionString 대신 개별 파라미터로 분리 — 특수문자 문제 우회
-    const connStr = process.env.DATABASE_URL || '';
+const normalizeConnectionString = (value) => {
+  const connStr = (value || '').trim().replace(/^['"]|['"]$/g, '');
+  if (!connStr) return connStr;
 
-    // postgresql://user:password@host:port/dbname 파싱
-    let config;
-    try {
-      const url = new URL(connStr);
-      config = {
-        user:     decodeURIComponent(url.username),
-        password: decodeURIComponent(url.password),
-        host:     url.hostname,
-        port:     parseInt(url.port) || 5432,
-        database: url.pathname.replace(/^\//, ''),
-        ssl:      { rejectUnauthorized: false },
-        max:      3,
-        idleTimeoutMillis: 30000,
-      };
-    } catch {
-      // fallback: connectionString 그대로 사용
-      config = {
-        connectionString: connStr,
-        ssl: { rejectUnauthorized: false },
-        max: 3,
-        idleTimeoutMillis: 30000,
-      };
+  try {
+    const url = new URL(connStr);
+
+    // Backward compatibility for an older example that mixed
+    // Supabase session-mode credentials with the transaction-mode port.
+    if (
+      url.protocol.startsWith('postgres') &&
+      /\.pooler\.supabase\.com$/i.test(url.hostname) &&
+      url.port === '6543' &&
+      url.username.startsWith('postgres.')
+    ) {
+      const projectRef = url.username.slice('postgres.'.length);
+      if (projectRef) {
+        url.username = 'postgres';
+        url.hostname = `db.${projectRef}.supabase.co`;
+      }
     }
 
-    pool = new Pool(config);
+    return url.toString();
+  } catch {
+    return connStr;
+  }
+};
+
+const getPool = () => {
+  if (!pool) {
+    const connStr = normalizeConnectionString(process.env.DATABASE_URL);
+
+    pool = new Pool({
+      connectionString: connStr,
+      ssl: { rejectUnauthorized: false },
+      max: 3,
+      idleTimeoutMillis: 30000,
+    });
+
     pool.on('error', (err) => console.error('Pool error:', err.message));
   }
+
   return pool;
 };
 
