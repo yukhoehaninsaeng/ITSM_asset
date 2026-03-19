@@ -1,0 +1,16 @@
+{
+  "name": "assetflow",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "migrate": "node api/lib/migrate.js",
+    "seed": "node api/lib/seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.12.0",
+    "qrcode": "^1.5.4"
+  }
+}
