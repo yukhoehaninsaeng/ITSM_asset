@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import { qrAPI } from '../utils/api';
 
 const SC = { 'In Use':'#2e9e6b','In Stock':'#3b7dd8','Maintenance':'#e8972c','Retired':'#8c96a3','Lost':'#d94f3d' };
 const SL = { 'In Use':'사용 중','In Stock':'재고','Maintenance':'유지보수','Retired':'폐기','Lost':'분실' };
@@ -13,7 +13,7 @@ export default function ScanLanding() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    api.get(`/api/qr/info/${assetNumber}`)
+    qrAPI.info(assetNumber)
       .then(r => setAsset(r.data))
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));

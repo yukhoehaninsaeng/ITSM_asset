@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import api from '../utils/api';
+import { authAPI } from '../utils/api';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
@@ -20,13 +20,13 @@ export default function Users() {
     load();
   }, []); // eslint-disable-line
 
-  const load = () => api.get('/api/auth/users').then(r => setUsers(r.data)).catch(() => {});
+  const load = () => authAPI.users().then(r => setUsers(r.data)).catch(() => {});
 
   const create = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
-      await api.post('/api/auth/register', form);
+      await authAPI.register(form);
       toast.success('사용자가 생성되었습니다');
       setShow(false);
       setForm(EMPTY);

@@ -4,13 +4,16 @@
   "outputDirectory": "frontend/build",
   "installCommand": "npm install",
   "functions": {
-    "api/**/*.js": {
-      "memory": 256,
-      "maxDuration": 15
-    }
+    "api/auth.js":      { "maxDuration": 15 },
+    "api/assets.js":    { "maxDuration": 15 },
+    "api/qr.js":        { "maxDuration": 15 },
+    "api/dashboard.js": { "maxDuration": 15 }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/api/auth/:path*",      "destination": "/api/auth" },
+    { "source": "/api/assets/:path*",    "destination": "/api/assets" },
+    { "source": "/api/qr/:path*",        "destination": "/api/qr" },
+    { "source": "/api/dashboard/:path*", "destination": "/api/dashboard" },
+    { "source": "/((?!api/).*)",         "destination": "/index.html" }
   ]
 }

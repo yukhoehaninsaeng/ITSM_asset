@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../utils/api';
+import { qrAPI } from '../../utils/api';
 import toast from 'react-hot-toast';
 
 export default function QRModal({ asset, onClose }) {
@@ -10,10 +10,7 @@ export default function QRModal({ asset, onClose }) {
   const generate = async (url) => {
     setLoading(true);
     try {
-      const res = await api.get(`/api/qr/${asset.asset_number}`, {
-        params: { base_url: url },
-        responseType: 'blob',
-      });
+      const res = await qrAPI.generate(asset.asset_number, url);
       if (qrUrl) URL.revokeObjectURL(qrUrl);
       setQrUrl(URL.createObjectURL(res.data));
     } catch { toast.error('QR 코드 생성 실패'); }

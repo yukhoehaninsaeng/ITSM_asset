@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../utils/api';
+import { assetsAPI, authAPI } from '../../utils/api';
 import toast from 'react-hot-toast';
 
 const STATUSES   = [['In Use','사용 중'],['In Stock','재고'],['Maintenance','유지보수'],['Retired','폐기'],['Lost','분실']];
@@ -13,7 +13,7 @@ export default function AssetModal({ asset, onClose, onSave }) {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    api.get('/api/auth/users').then(r => setUsers(r.data)).catch(() => {});
+    authAPI.users().then(r => setUsers(r.data)).catch(() => {});
     if (asset) {
       setForm({
         ...EMPTY, ...asset,
@@ -36,10 +36,10 @@ export default function AssetModal({ asset, onClose, onSave }) {
       if (!body.assigned_to)     body.assigned_to = null;
 
       if (isEdit) {
-        await api.put(`/api/assets/${asset.asset_number}`, body);
+        await assetsAPI.update(asset.asset_number, body);
         toast.success('수정되었습니다');
       } else {
-        await api.post('/api/assets', body);
+        await assetsAPI.create(body);
         toast.success('자산이 등록되었습니다');
       }
       onSave();

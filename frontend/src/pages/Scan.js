@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Html5QrcodeScanner, Html5QrcodeScanType } from 'html5-qrcode';
-import api from '../utils/api';
+import { qrAPI, assetsAPI } from '../utils/api';
 import toast from 'react-hot-toast';
 
 const SB = { 'In Use':'badge badge-in-use','In Stock':'badge badge-in-stock','Maintenance':'badge badge-maintenance','Retired':'badge badge-retired','Lost':'badge badge-lost' };
@@ -52,7 +52,7 @@ export default function Scan() {
     if (!num) return;
     setLoading(true);
     try {
-      const { data } = await api.get(`/api/qr/info/${num}`);
+      const { data } = await qrAPI.info(num);
       setResult(data);
     } catch (err) {
       if (err.response?.status === 404) {
@@ -66,7 +66,7 @@ export default function Scan() {
   const recordScan = async () => {
     if (!result?.found) return;
     try {
-      await api.post(`/api/assets/${result.asset_number}/scans`, {
+      await assetsAPI.recordScan(result.asset_number, {
         action: '현황 확인',
         location: result.location || '',
         notes: 'QR 스캔으로 현황 확인',

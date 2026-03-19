@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import api from '../utils/api';
+import { assetsAPI } from '../utils/api';
 import toast from 'react-hot-toast';
 import AssetModal from '../components/common/AssetModal';
 import QRModal from '../components/common/QRModal';
@@ -32,8 +32,8 @@ export default function AssetDetail() {
   const load = async () => {
     try {
       const [a, s] = await Promise.all([
-        api.get(`/api/assets/${assetNumber}`),
-        api.get(`/api/assets/${assetNumber}/scans`),
+        assetsAPI.get(assetNumber),
+        assetsAPI.scans(assetNumber),
       ]);
       setAsset(a.data);
       setScans(s.data);

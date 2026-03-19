@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import api from '../utils/api';
+import { dashboardAPI } from '../utils/api';
 
 const SC = { 'In Use':'#2e9e6b','In Stock':'#3b7dd8','Maintenance':'#e8972c','Retired':'#8c96a3','Lost':'#d94f3d' };
 const SL = { 'In Use':'사용 중','In Stock':'재고','Maintenance':'유지보수','Retired':'폐기','Lost':'분실' };
@@ -18,7 +18,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    api.get('/api/dashboard/stats').then(r => setStats(r.data)).catch(() => {});
+    dashboardAPI.stats().then(r => setStats(r.data)).catch(() => {});
   }, []);
 
   if (!stats) return (

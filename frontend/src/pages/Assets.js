@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import api, { assetsAPI, authAPI } from '../utils/api';
 import toast from 'react-hot-toast';
 import AssetModal from '../components/common/AssetModal';
 import QRModal from '../components/common/QRModal';
@@ -28,7 +28,7 @@ export default function Assets() {
       if (search)  p.search   = search;
       if (fStatus) p.status   = fStatus;
       if (fCat)    p.category = fCat;
-      const { data: res } = await api.get('/api/assets', { params: p });
+      const { data: res } = await assetsAPI.list(p);
       setData(res);
     } catch { toast.error('목록 불러오기 실패'); }
     finally { setLoading(false); }
@@ -39,7 +39,7 @@ export default function Assets() {
   const del = async (num) => {
     if (!window.confirm(`${num} 자산을 삭제하시겠습니까?`)) return;
     try {
-      await api.delete(`/api/assets/${num}`);
+      await assetsAPI.delete(num);
       toast.success('삭제되었습니다');
       load();
     } catch (err) { toast.error(err.response?.data?.error || '삭제 실패'); }
